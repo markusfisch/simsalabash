@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#   O         ,-
+#  ° o    . -´  '     ,-
+#   °  .´        ` . ´,´
+#     ( °   ))     . (
+#      `-;_    . -´ `.`.
+#          `._'       ´
+#
+# Copyright (c) 2011 Markus Fisch <mf@markusfisch.de>
+#
+# Licensed under the MIT license:
+# http://www.opensource.org/licenses/mit-license.php
+#
+
+# Echo date of given file
+#
+# @param 1 - path and file name (optional)
+# @param 2 - date format (optional)
+if [[ $OSTYPE == *gnu ]]
+then
+file_date()
+{
+	date -r ${1:-$FILE} +"${2:-%e %b %Y}"
+}
+else
+file_date()
+{
+	stat -f "%Sm" -t "${2:-%e %b %Y}" ${1:-$FILE}
+}
+fi

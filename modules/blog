@@ -1,0 +1,192 @@
+#!/bin/bash
+#
+#   O         ,-
+#  ° o    . -´  '     ,-
+#   °  .´        ` . ´,´
+#     ( °   ))     . (
+#      `-;_    . -´ `.`.
+#          `._'       ´
+#
+# Copyright (c) 2011 Markus Fisch <mf@markusfisch.de>
+#
+# Licensed under the MIT license:
+# http://www.opensource.org/licenses/mit-license.php
+#
+
+# Echo link to given file
+#
+# @param 1 - label
+# @param 2 - href
+posts_link()
+{
+	echo "<a href=\"$2\">$1</a>"
+}
+
+# Echo link to previous post in given directory
+posts_prev()
+{
+	local F Q T FLAG
+
+	while read F Q T
+	do
+		[ ${F%/*} != $POSTS ] && continue
+
+		[ $FLAG ] && {
+			posts_link "&larr; $T" $Q
+			return
+		}
+
+		[ $F == $FILE ] && FLAG=1
+	done < `posts_map`
+
+	echo '&nbsp;'
+}
+
+# Echo link to next post in given directory
+posts_next()
+{
+	local F Q T LAST_QUERY LAST_LABEL
+
+	while read F Q T
+	do
+		[ ${F%/*} != $POSTS ] && continue
+
+		[ $F == $FILE ] && {
+			[ $LAST_QUERY ] &&
+				posts_link "$LAST_TITLE &rarr;" $LAST_QUERY
+
+			return
+		}
+
+		LAST_QUERY=$Q
+		LAST_TITLE=$T
+	done < `posts_map`
+}
+
+# Create posts item
+#
+# @param 1 - label
+# @param 2 - href
+posts_li()
+{
+	echo "<li><a href=\"$2\">$1</a></li>"
+}
+
+# Create posts list
+#
+# @param 1 - class name
+posts_ul()
+{
+	if [ $1 ]
+	then
+		echo "<ul class=\"${1//[/ ]/}\">"
+	else
+		echo '</ul>'
+	fi
+}
+
+# Echo RFC 3339 date in different format
+#
+# @param 1 - RFC 3339 date string
+# @param 2 - date format (optional)
+if [[ $OSTYPE == *gnu ]]
+then
+format_date()
+{
+	date -d "$1" +"${2:-%e %b %Y}"
+}
+else
+format_date()
+{
+	date -j -f "%Y-%m-%d" +"${2:-%e %b %Y}" "$1"
+}
+fi
+
+# Echo time tag from file name
+#
+# @param 1 - content file with leading date (optional)
+# @flags FORMAT - date format
+post_date()
+{
+	local F=${1:-$FILE}
+
+	F=${F##*/}
+
+	[[ $F == [0-9]* ]] || return
+
+	local D=${F:0:10}
+
+	echo "<span>`format_date $D "${FORMAT:-%e %b %Y}"`</span>"
+}
+
+# Echo list of posts
+#
+# @param 1 - path
+posts_list()
+{
+	ls $1/* | sort -r
+}
+
+# Set up posts map
+posts_map()
+{
+	local MAP=$WORK/posts-${POSTS//[\/ ]/-}
+
+	[ -r $MAP ] || process $POSTS nav_index posts_list > $MAP || return 1
+
+	echo $MAP
+}
+
+# Give a listing of posts in given directory
+#
+# @param 1 - maximum number of posts (optional)
+posts()
+{
+	local F Q T N=${1:-999999}
+
+	posts_ul ${POSTS##*/}
+
+	while read F Q T
+	do
+		(( N-- == 0 )) && break
+
+		[ ${F%/*} != $POSTS ] && continue
+
+		local D=`post_date $F`
+
+		[ "$D" ] || continue
+
+		posts_li "$D &raquo; $T" $Q
+	done < `posts_map`
+
+	posts_ul
+}
+
+# Clean path component of content file
+#
+# @param 1 - component of a path of a content file
+clean()
+{
+	local F=$1
+
+	# cut off optional leading sort or date numbers
+	[[ $F == [0-9]* ]] && F=${F##*[0-9]}
+
+	# cut off leading hypens or underscores (either remains of sort
+	# or date numbers or prefix to exclude file from navigation)
+	[[ $F == [-_.]* ]] && F=${F#[-_.]}
+
+	echo $F
+}
+
+# Echo label for given file or directory name
+#
+# @param 1 - file or directory name
+label()
+{
+	local F=`clean $1`
+
+	echo ${F//[-_]/ }
+}
+
+POSTS=${POSTS:-$CONTENTS/posts}

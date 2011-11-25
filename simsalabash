@@ -1,0 +1,459 @@
+#!/bin/bash
+#
+#   O         ,-
+#  ° o    . -´  '     ,-
+#   °  .´        ` . ´,´
+#     ( °   ))     . (
+#      `-;_    . -´ `.`.
+#          `._'       ´
+#
+# Copyright (c) 2011 Markus Fisch <mf@markusfisch.de>
+#
+# Licensed under the MIT license:
+# http://www.opensource.org/licenses/mit-license.php
+#
+
+# Expand given file into output stream
+#
+# @param ... - path and name of file to include
+include()
+{
+	local F C
+
+	for F in $@
+	do
+		C=`< ${F//@/$LAYOUTS/}`
+
+		# evaluate optional front matter
+		[[ $C == '<<'* ]] && {
+			C=${C#<<}
+			eval "${C%%>>*}"
+			C=${C##*>>}
+		}
+
+		# would love to use a built-in here but
+		# eval "echo \"${@//\"/\\\"}\""
+		# doesn't work very well for all kinds of quotes
+		eval "cat <<EOF
+$C
+EOF"
+	done
+}
+
+# Print title of current page; call this from a layout file
+title()
+{
+	echo "$TITLE"
+}
+
+# Insert content from source file into output stream, call this in a
+# layout file where the content should appear; override to customize,
+# for example, to filter output through a markdown interpreter
+content()
+{
+	include $FILE
+}
+
+# Output, open or close navigation item
+#
+# @param 1 - label (optional, if empty, item gets closed)
+# @param 2 - href (optional, if empty, item gets opened)
+# @param 3 - true when active (optional)
+nav_li()
+{
+	[ "$1" ] || {
+		echo '</li>'
+		return
+	}
+
+	local A=${1// /}
+	local L=
+
+	[ $3 ] && {
+		L=' class="Active"'
+		A="$A${A:+ }Active"
+	}
+
+	if [ $2 ]
+	then
+		echo "<li$L><a href=\"$2\" class=\"$A\">$1</a></li>"
+	else
+		echo "<li$L><a class=\"$A\">$1</a>"
+	fi
+}
+
+# Open or close navigation listing
+#
+# @param 1 - class name (optional, if empty, list gets closed)
+nav_ul()
+{
+	[ "$1" ] || {
+		echo '</ul>'
+		return
+	}
+
+	echo "<ul class=\"${1//[/ ]/}\">"
+}
+
+# Echo list of content files that should be in navigation
+#
+# @param 1 - path
+nav_list()
+{
+	local S=$1/.nav
+
+	if [ -f $S ]
+	then
+		local F
+
+		while read F
+		do
+			echo $1/$F
+		done < $S
+	else
+		echo $1/*
+	fi
+}
+
+# Index given content file for navigation
+#
+# @param 1 - path and name of content file
+nav_index()
+{
+	local LAYOUT= TITLE= QUERY=
+
+	realize $1
+
+	echo $1 $QUERY $TITLE
+}
+
+# Create a recursive standard list navigation from given path
+#
+# @param 1 - root path (optional)
+# @flags UNFOLD - unfold navigation tree
+# @flags FLAT - don't dive into directories
+nav()
+{
+	local ROOT=${1:-$CONTENTS}
+	local REF=$FILE
+	local LAST=$ROOT
+	local SKIP=
+	local LINKED=
+
+	[ -d $ROOT ] || return 1
+
+	# ensure ROOT is in REF
+	[ $ROOT != ${REF:0:${#ROOT}} ] && REF=$ROOT/
+
+	# generate navigation map for given root directory
+	local MAP=$WORK/nav-${ROOT//[\/ ]/-}
+
+	[ -r $MAP ] || process $ROOT nav_index nav_list > $MAP || return 1
+
+	nav_ul "`label ${ROOT##*/}`"
+
+	for (( ;; ))
+	do
+		local F= QUERY= TITLE=
+		local P= STOP=
+
+		if read F QUERY TITLE
+		then
+			# skip entries that don't begin with ROOT
+			[ $ROOT == ${F:0:${#ROOT}} ] || continue
+
+			P=${F%/*}
+
+			# skip entries that aren't in active tree
+			[ $SKIP ] && [ "$SKIP" == "${P:0:${#SKIP}}" ] && {
+				! [ $LINKED ] &&
+					[ "$P" == "${BASE:0:${#P}}" ] && {
+					nav_li "$D" $QUERY
+					LINKED=1
+				}
+
+				continue
+			}
+		else
+			P=$ROOT
+			STOP=1
+		fi
+
+		SKIP=
+		LINKED=
+
+		[ $LAST != $P ] && {
+			local DOWN=$LAST
+			local UP=$P
+
+			while [[ ${DOWN%%/*} == ${UP%%/*} ]]
+			do
+				if [[ $DOWN == */* ]]
+				then
+					DOWN=${DOWN#*/}
+				else
+					DOWN=
+				fi
+
+				if [[ $UP == */* ]]
+				then
+					UP=${UP#*/}
+				else
+					UP=
+				fi
+			done
+
+			local BASE=${P:0:$(( ${#P}-${#UP} ))}
+			local D
+			local SAFE=$IFS IFS=/
+
+			for D in $DOWN
+			do
+				nav_ul
+				nav_li
+			done
+			for D in $UP
+			do
+				local A=
+				local B=$BASE
+
+				# check if the new path is part of the file
+				# in process
+				BASE="$BASE$D/"
+				[ "$BASE" == "${REF:0:${#BASE}}" ] && A=1
+
+				D=`label $D`
+
+				# don't dive into directories
+				[ $FLAT ] && {
+					LAST=${B%/*}
+					SKIP=${BASE%/*}
+
+					[ "$P" == "$SKIP" ] && {
+						[ $HIDDEN ] ||
+							nav_li "$D" $QUERY $A
+
+						LINKED=1
+					}
+
+					break
+				}
+
+				# don't dive in inactive directories
+				[ $UNFOLD ] || {
+					[ $A ] || {
+						LAST=${B%/*}
+
+						[ "$B" == "${REF:0:${#B}}" ] && {
+							SKIP=${BASE%/*}
+
+							[ "$P" == "$SKIP" ] && {
+								nav_li "$D" $QUERY
+								LINKED=1
+							}
+						}
+
+						break
+					}
+				}
+
+				nav_li "$D" "" $A
+				nav_ul "$D"
+			done
+
+			IFS=$SAFE
+
+			[ $STOP ] && break
+			[ $SKIP ] && continue
+
+			LAST=$P
+		}
+
+		[ $STOP ] && break
+
+		local A=
+		[ $F == $REF ] && A=1
+
+		nav_li "$TITLE" $QUERY $A
+	done < $MAP
+
+	nav_ul
+}
+
+# Echo label for given file or directory name
+#
+# @param 1 - file or directory name
+label()
+{
+	echo ${1//[-_]/ }
+}
+
+# Make string lower case
+#
+# @param 1 - some string
+if [ $BASH_VERSINFO ] && (( ${BASH_VERSINFO[0]} > 3 ))
+then
+lower()
+{
+	echo "${1,,}"
+}
+else
+lower()
+{
+	echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+fi
+
+# Compose query name
+#
+# @param 1 - path and name of content file
+query()
+{
+	[ ${1%.*} == "$INDEX" ] && {
+		echo index.${1##*.}
+		return
+	}
+
+	local C=${1#$CONTENTS/} F= N
+
+	# turn directories into prefixes
+	for N in ${C//\// }
+	do
+		F=$F${F:+-}$N
+	done
+
+	lower $F
+}
+
+# Find layout for given content file
+#
+# @param 1 - path and name of content file
+layout()
+{
+	# try path components in reverse order
+	local R N
+
+	for N in ${1//\// }
+	do
+		R="$N $R"
+	done
+
+	for N in $R
+	do
+		local L
+
+		for L in $LAYOUTS/$N.*
+		do
+			[ -r "$L" ] && {
+				echo $L
+				return
+			}
+		done
+	done
+}
+
+# Realize properties of given file
+#
+# @param 1 - path and name of content file
+realize()
+{
+	local CACHE=$WORK/${1//[\/ ]/-}
+
+	[ -r $CACHE ] && {
+		. $CACHE
+		return
+	}
+
+	LAYOUT=`layout $1`
+	TITLE=`label ${1##*/}`
+	QUERY=`query $1.${LAYOUT##*.}`
+
+	echo "LAYOUT='$LAYOUT'
+TITLE='$TITLE'
+QUERY='$QUERY'" > $CACHE
+}
+
+# Compose output files
+#
+# @param 1 - path and name of content file
+compose()
+{
+	local LAYOUT= TITLE= QUERY=
+
+	realize $1
+
+	FILE=$1 include $LAYOUT > $HTDOCS/$QUERY
+}
+
+# Process files recursively
+#
+# @param 1 - path to process
+# @param 2 - function to call for every file
+# @param 3 - function to get file listing from (optional)
+process()
+{
+	local F
+
+	for F in `if [ $3 ]
+		then
+			$3 $1
+		else
+			echo $1/*
+		fi`
+	do
+		[ -d "$F" ] && {
+			process $F $2 $3
+			continue
+		}
+
+		[ -r $F ] || continue
+
+		$2 $F || return 1
+	done
+
+	return 0
+}
+
+# Load extension
+customize()
+{
+	local D F
+
+	for D in $HOME/.${0##*/} lib
+	do
+		[ -d ] || continue
+
+		for F in $D/*
+		do
+			[ -r $F ] && . $F
+		done
+	done
+}
+
+# Actions to perform before processing
+function before()
+{
+	return 0
+}
+
+# Actions to perform after processing
+function after()
+{
+	return 0
+}
+
+readonly CONTENTS=${CONTENTS:-contents}
+readonly LAYOUTS=${LAYOUTS:-layouts}
+readonly HTDOCS=${HTDOCS:-htdocs}
+readonly WORK=${WORK:-`mktemp -d ${0##*/}.XXXXXXXXXX`}
+
+customize
+
+# if no index is given, take the very first file in $CONTENTS/
+INDEX=${INDEX:-`for F in $(nav_list $CONTENTS); do echo $F && break; done`}
+
+before &&
+	process $CONTENTS compose &&
+	after
+
+rm -rf $WORK
