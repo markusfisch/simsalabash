@@ -4,7 +4,6 @@ ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
 parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec,
 pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>
 `UNFOLD=1 nav $CONTENTS/Beta`
-`ls`
 <h2>Donec pede justo</h2>
 <p>Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
 In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
