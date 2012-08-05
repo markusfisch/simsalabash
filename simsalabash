@@ -62,7 +62,7 @@ content()
 nav_li()
 {
 	[ "$1" ] || {
-		echo '</li>'
+		echo -n '</li>'
 		return
 	}
 
@@ -76,9 +76,9 @@ nav_li()
 
 	if [ $2 ]
 	then
-		echo "<li$L><a href=\"$2\" class=\"$A\">$1</a></li>"
+		echo -n "<li$L><a href=\"$2\" class=\"$A\">$1</a></li>"
 	else
-		echo "<li$L><a class=\"$A\">$1</a>"
+		echo -n "<li$L><a class=\"$A\">$1</a>"
 	fi
 }
 
@@ -88,11 +88,11 @@ nav_li()
 nav_ul()
 {
 	[ "$1" ] || {
-		echo '</ul>'
+		echo -n '</ul>'
 		return
 	}
 
-	echo "<ul class=\"${1//[/ ]/}\">"
+	echo -n "<ul class=\"${1//[/ ]/}\">"
 }
 
 # Echo list of content files that should be in navigation
@@ -278,6 +278,7 @@ nav()
 	done < $MAP
 
 	nav_ul
+	echo
 }
 
 # Echo label for given file or directory name
