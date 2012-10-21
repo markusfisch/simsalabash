@@ -7,7 +7,7 @@
 #      `-;_    . -´ `.`.
 #          `._'       ´
 #
-# Copyright (c) 2011 Markus Fisch <mf@markusfisch.de>
+# Copyright (c) 2011,2012 Markus Fisch <mf@markusfisch.de>
 #
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license.php
@@ -311,13 +311,13 @@ fi
 query()
 {
 	[ ${1%.*} == "$INDEX" ] && {
-		echo index.${1##*.}
+		echo 'index.'${1##*.}
 		return
 	}
 
 	local C=${1#$CONTENTS/} F= N
 
-	# turn directories into prefixes
+	# turn directories into prefixes, replace white space and slashes
 	for N in ${C//\// }
 	do
 		F=$F${F:+-}$N
@@ -415,7 +415,7 @@ process()
 	return 0
 }
 
-# Load extension
+# Load extensions
 customize()
 {
 	local D F
@@ -432,13 +432,13 @@ customize()
 }
 
 # Actions to perform before processing
-function before()
+before()
 {
 	return 0
 }
 
 # Actions to perform after processing
-function after()
+after()
 {
 	return 0
 }
@@ -450,8 +450,9 @@ readonly WORK=${WORK:-`mktemp -d ${0##*/}.XXXXXXXXXX`}
 
 customize
 
-# if no index is given, take the very first file in $CONTENTS/
+# set index from preset or take the first nav item
 INDEX=${INDEX:-`for F in $(nav_list $CONTENTS); do echo $F && break; done`}
+[ -r "$INDEX" ] || INDEX=$CONTENTS/$INDEX
 
 before &&
 	process $CONTENTS compose &&
