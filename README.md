@@ -1,4 +1,6 @@
-Hypertext mechanics in BASH.
+Hypertext mechanics in BASH
+===========================
+
 For command line nerds. With love.
 
 A sample is worth a thousand words:
@@ -12,6 +14,7 @@ A sample is worth a thousand words:
 Find more reasonable examples in examples/.
 
 How does it work?
+-----------------
 
 For every file in contents/, the corresponding layout will get expanded into
 htdocs/ where the output is stored under the name of the content file with
@@ -89,6 +92,7 @@ You can override existing functions to extend simsalabash or add
 new ones to add further functionality.
 
 How to use Markdown?
+--------------------
 
 Download Markdown.pl from
 
@@ -105,6 +109,7 @@ into a file in $HOME/.simsalabash/ to override and extend the default
 function.
 
 Purpose
+-------
 
 simsalabash aims to be a simple tool to combine a website from a bunch
 of text files and generate a recursive standard list navigation for it.
@@ -116,6 +121,7 @@ simsalabash is not a Jack of all trades, though. Please check out the
 advantages and disadvantages:
 
 Advantages and principles
+-------------------------
 
 * Little to no configuration.
 * Meaningful structure of content/ which mirrors your web site.
@@ -126,6 +132,7 @@ Advantages and principles
 * No dependencies beyond BASH, cat, mktemp, rm and probably tr (BASH < 4).
 
 Disadvantages and limitations
+-----------------------------
 
 * Markdown and things like that are external.
 * There's no integrated web server and never will be.
@@ -133,13 +140,14 @@ Disadvantages and limitations
 * BASH is not object-oriented, nor easy, nor hip.
 
 Alternatives
+------------
 
-BASH
+### BASH
 
 * https://github.com/cosmonaut/mksite
 * http://gitorious.org/fugitive
 
-Ruby
+### Ruby
 
 * http://jekyllrb.com/
 * http://nanoc.stoneship.org/
@@ -148,15 +156,15 @@ Ruby
 * http://tinytree.info/
 * http://webgen.rubyforge.org/
 
-Python
+### Python
 
 * http://ringce.com/hyde
 * http://pypi.python.org/pypi/cyrax
 
-NodeJS
+### NodeJS
 
 * https://github.com/caolan/petrify
 
-PHP
+### PHP
 
 * http://www.phrozn.info/en/
