@@ -224,22 +224,20 @@ nav()
 
 				D=`label $D`
 
-				# don't dive into directories
+				# skip subdirectories if FLAT is set
 				[ $FLAT ] && {
 					LAST=${B%/*}
 					SKIP=${BASE%/*}
 
 					[ "$P" == "$SKIP" ] && {
-						[ $HIDDEN ] ||
-							nav_li "$D" $QUERY $A
-
+						nav_li "$D" $QUERY $A
 						LINKED=1
 					}
 
 					break
 				}
 
-				# don't dive in inactive directories
+				# fold subdirectory if UNSET and A is unset
 				[ $UNFOLD ] || {
 					[ $A ] || {
 						LAST=${B%/*}
