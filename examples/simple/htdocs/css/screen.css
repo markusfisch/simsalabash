@@ -1,9 +1,9 @@
 body
 {
 	background: #f8f8f8;
-	margin: 20px auto; padding: 0 20px;
-	max-width: 600px;
-	font: 14px monospace; color: #484848;
+	margin: 1rem auto; padding: 0 1rem;
+	max-width: 40rem;
+	font: 11pt monospace; color: #484848;
 	-o-transform: rotate( -2deg );
 	-webkit-transform: rotate( -2deg );
 	-moz-transform: rotate( -2deg );
@@ -19,12 +19,12 @@ nav ul
 nav a
 {
 	display: block;
-	margin: 0; padding: 6px 10px;
+	margin: 0; padding: .25rem .5rem;
 	background: #e0e0e0;
 	color: #808080;
 	text-decoration: none;
 	font-variant: small-caps;
-	border-bottom: 6px solid #d8d8d8;
+	border-bottom: .25rem solid #d8d8d8;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -38,7 +38,7 @@ nav a.Active
 
 nav li
 {
-	margin: 0 4px 4px 0; padding: 0;
+	margin: 0 .2rem .2rem 0; padding: 0;
 	float: left;
 	position: relative;
 }
@@ -47,7 +47,7 @@ nav ul ul
 {
 	position: relative;
 	left: 0; top: 100%;
-	padding-top: 4px;
+	padding-top: .2rem;
 }
 
 nav ul ul li
@@ -57,7 +57,7 @@ nav ul ul li
 
 nav ul ul a
 {
-	width: 128px;
+	width: 10rem;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -65,8 +65,8 @@ nav ul ul a
 nav li ul ul
 {
 	position: absolute;
-	left: 100%; top: -4px; z-index: 100;
-	padding-left: 4px;
+	left: 100%; top: -.2rem; z-index: 100;
+	padding-left: .2rem;
 }
 
 article
@@ -78,7 +78,7 @@ h1
 {
 	color: #a8cd43;
 	font-variant: small-caps;
-	font-size: 40px;
+	font-size: 2rem;
 	-o-transform: rotate( 2deg );
 	-webkit-transform: rotate( 2deg );
 	-moz-transform: rotate( 2deg );
@@ -96,7 +96,7 @@ a
 	color: #000;
 }
 
-p
+p, li
 {
 	line-height: 180%;
 }
@@ -104,6 +104,6 @@ p
 footer
 {
 	clear: both;
-	font-size: 10px; color: #c0c0c0;
+	font-size: .5rem; color: #c0c0c0;
 	text-transform: uppercase;
 }
