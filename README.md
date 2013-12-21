@@ -79,6 +79,7 @@ example, you may do something like this:
 $FILE holds the path and name of the content file in process.
 
 How to extend simsalabash?
+--------------------------
 
 There are two places for additional source files:
 
@@ -117,7 +118,7 @@ of text files and generate a recursive standard list navigation for it.
 It was designed to minify the effort to build and maintain small static
 websites and targets the experienced BASH user.
 
-simsalabash is not a Jack of all trades, though. Please check out the
+simsalabash is not a Jack of all trades, though. Please check out its
 advantages and disadvantages:
 
 Advantages and principles
