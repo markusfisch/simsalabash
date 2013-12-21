@@ -56,8 +56,8 @@ content()
 
 # Output, open or close navigation item
 #
-# @param 1 - label (optional, if empty, item gets closed)
-# @param 2 - href (optional, if empty, item gets opened)
+# @param 1 - label (optional, closes list item if empty)
+# @param 2 - href (optional, opens list item if empty)
 # @param 3 - true when active (optional)
 nav_li()
 {
@@ -66,19 +66,21 @@ nav_li()
 		return
 	}
 
-	local A=${1// /}
+	local A="NavLink ${1// /}"
 	local L=
 
 	[ $3 ] && {
-		L=' class="Active"'
+		L=' Active'
 		A="$A${A:+ }Active"
 	}
 
+	echo -n "<li class=\"NavListItem$L\"><a class=\"$A\"";
+
 	if [ $2 ]
 	then
-		echo -n "<li$L><a href=\"$2\" class=\"$A\">$1</a></li>"
+		echo -n " href=\"$2\">$1</a></li>"
 	else
-		echo -n "<li$L><a class=\"$A\">$1</a>"
+		echo -n ">$1</a>"
 	fi
 }
 
@@ -92,7 +94,7 @@ nav_ul()
 		return
 	}
 
-	echo -n "<ul class=\"${1//[/ ]/}\">"
+	echo -n "<ul class=\"NavList ${1//[/ ]/}\">"
 }
 
 # Echo list of content files that should be in navigation
