@@ -143,29 +143,4 @@ Disadvantages and limitations
 Alternatives
 ------------
 
-### BASH
-
-* https://github.com/cosmonaut/mksite
-* http://gitorious.org/fugitive
-
-### Ruby
-
-* http://jekyllrb.com/
-* http://nanoc.stoneship.org/
-* http://stasis.me/
-* http://staticmatic.rubyforge.org/
-* http://tinytree.info/
-* http://webgen.rubyforge.org/
-
-### Python
-
-* http://ringce.com/hyde
-* http://pypi.python.org/pypi/cyrax
-
-### NodeJS
-
-* https://github.com/caolan/petrify
-
-### PHP
-
-* http://www.phrozn.info/en/
+Find a comprehensive list at [staticsitegenerators.net](http://staticsitegenerators.net/).
