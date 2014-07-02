@@ -20,7 +20,7 @@ include()
 {
 	local F C
 
-	for F in $@
+	for F
 	do
 		C=`< ${F//@/$LAYOUTS/}`
 
