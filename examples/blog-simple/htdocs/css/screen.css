@@ -1,72 +1,72 @@
-body
+.Content
 {
 	background: #f8f8f8;
 	margin: 1em auto; padding: 0 1em;
 	max-width: 40em;
-	font: 11pt monospace; color: #484848;
+	font: 12pt monospace; color: #484848;
 }
 
-nav ul
+.Nav ul
 {
 	margin: 0; padding: 0;
 	list-style: none;
 	overflow: hidden;
 }
 
-nav a
+.Nav a
 {
 	display: block;
-	margin: 0; padding: .25em .5em;
-	background: #e0e0e0;
-	color: #808080;
+	margin: 0; padding: .25em 1em;
+	background: #eee;
+	color: #888;
 	text-decoration: none;
-	font-variant: small-caps;
-	border-bottom: .25em solid #d8d8d8;
+	text-transform: uppercase;
+	border-bottom: .25em solid #ddd;
 	white-space: nowrap;
 	overflow: hidden;
 }
 
-nav a.Active
+.Nav a.Active
 {
 	background: #a8cd43;
-	color: #000;
+	color: #111;
 	border-color: #98bd33;
 }
 
-nav li
+.Nav li
 {
 	margin: 0 .2em .2em 0; padding: 0;
 	float: left;
 	position: relative;
 }
 
-nav ul ul
+.Nav ul ul
 {
 	position: relative;
 	left: 0; top: 100%;
 	padding-top: .2em;
 }
 
-nav ul ul li
+.Nav ul ul li
 {
 	clear: left;
 }
 
-nav ul ul a
+.Nav ul ul a
 {
 	width: 10em;
 	white-space: nowrap;
 	overflow: hidden;
 }
 
-nav li ul ul
+.Nav li ul ul
 {
 	position: absolute;
 	left: 100%; top: -.2em; z-index: 100;
 	padding-left: .2em;
 }
 
-article
+.Article
 {
 	clear: both;
 }
@@ -74,19 +74,17 @@ article
 h1
 {
 	color: #a8cd43;
-	font-variant: small-caps;
 	font-size: 2em;
-	text-align: center;
 }
 
 h2
 {
-	color: #b0b0b0;
+	color: #888;
 }
 
 a
 {
-	color: #000;
+	color: #111;
 }
 
 p, li
@@ -96,10 +94,10 @@ p, li
 
 ul.Browse
 {
-	margin: 0; padding: .25em .5em;
+	margin: 0; padding: .25em 1em;
 	list-style: none;
-	background: #e0e0e0;
-	border-bottom: .25em solid #d8d8d8;
+	background: #eee;
+	border-bottom: .25em solid #ddd;
 }
 
 ul.Browse li
@@ -112,7 +110,6 @@ ul.Browse li a
 {
 	color: black;
 	text-decoration: none;
-	font-variant: small-caps;
 }
 
 ul.Browse li.Next
@@ -136,8 +133,9 @@ div.Posts ul li span
 	float: left;
 	padding: 1pt 0 0; margin: 0 .5em 0 0;
 	width: 8em;
-	font-size: 8pt; color: gray;
-	text-transform: uppercase; text-align: right;
+	font-size: 90%; color: #888;
+	text-transform: uppercase;
+	text-align: right;
 }
 
 div.Posts ul li a
@@ -145,9 +143,9 @@ div.Posts ul li a
 	text-decoration: none;
 }
 
-footer
+.Footer
 {
 	clear: both;
-	font-size: .5em; color: #c0c0c0;
+	font-size: 80%; color: #888;
 	text-transform: uppercase;
 }

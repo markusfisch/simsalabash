@@ -1,25 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8">
-<title>`title`</title>
+<meta name="viewport" content="width=device-width"/>
+<title>$(title)</title>
 <link rel="stylesheet" type="text/css" href="css/screen.css"/>
 </head>
-<body>
-<nav>
-`nav`
-</nav>
-<article>
+<body class="Content">
+<div class="Nav"><nav>
+$(nav)
+</nav></div>
+<div class="Article"><article>
 <ul class="Browse">
-<li class="Prev">`posts_prev`</li>
-<li class="Next">`posts_next`</li>
+<li class="Prev">$(posts_prev)</li>
+<li class="Next">$(posts_next)</li>
 </ul>
-`content`
-</article>
-<footer>
-<p>written by `whoami` &bull;
-built on `uname` &bull;
-powered by ${0##*/}</p>
-</footer>
+$(content)
+</article></div>
+<div class="Footer"><footer>
+<p>Written by $(whoami) &bull;
+Built on $(uname) &bull;
+Powered by ${0##*/}</p>
+</footer></div>
 </body>
 </html>
