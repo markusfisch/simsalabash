@@ -1,4 +1,4 @@
-Hypertext mechanics in BASH
+Hypertext mechanics in Bash
 ===========================
 
 For command line nerds. With love.
@@ -27,10 +27,6 @@ from the rear end with the file name.
 In your content and/or layout files you may use shell expansions like
 
 	$(command)
-
-or
-
-	`command`
 
 or
 
@@ -74,7 +70,7 @@ simsalabash does provide the following handy commands:
 Apart from that, you're free to invoke any command you like. For
 example, you may do something like this:
 
-	$FILE was written by `whoami`
+	$FILE was written by $(whoami)
 
 $FILE holds the path and name of the content file in process.
 
@@ -103,7 +99,7 @@ and put it into your path. Then paste this
 
 	content()
 	{
-		include $FILE | Markdown.pl
+		include "$FILE" | Markdown.pl
 	}
 
 into a file in $HOME/.simsalabash/ to override and extend the default
@@ -116,10 +112,10 @@ simsalabash aims to be a simple tool to combine a website from a bunch
 of text files and generate a recursive standard list navigation for it.
 
 It was designed to minify the effort to build and maintain small static
-websites and targets the experienced BASH user.
+websites and targets the experienced Bash user.
 
-simsalabash is not a Jack of all trades, though. Please check out its
-advantages and disadvantages:
+But simsalabash is not a Jack of all Trades. Please check out the advantages
+and disadvantages:
 
 Advantages and principles
 -------------------------
@@ -130,15 +126,15 @@ Advantages and principles
 * Easy sorting of navigation items with .nav files.
 * The output directory is not temporary so assets and downloads won't
   get copied everytime you're doing an rsync.
-* No dependencies beyond BASH, cat, mktemp, rm and probably tr (BASH < 4).
+* No dependencies beyond Bash, cat, mktemp, rm and probably tr (Bash < 4).
 
 Disadvantages and limitations
 -----------------------------
 
 * Markdown and things like that are external.
 * There's no integrated web server and never will be.
-* BASH is slow (but fast enough for any web site of reasonable size).
-* BASH is not object-oriented, nor easy, nor hip.
+* Bash is slow (but fast enough for any web site of reasonable size).
+* Bash is not object-oriented, nor easy, nor hip.
 
 Alternatives
 ------------
