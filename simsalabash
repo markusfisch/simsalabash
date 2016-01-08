@@ -1,17 +1,4 @@
 #!/usr/bin/env bash
-#
-#   O         ,-
-#  ° o    . -´  '     ,-
-#   °  .´        ` . ´,´
-#     ( °   ))     . (
-#      `-;_    . -´ `.`.
-#          `._'       ´
-#
-# Copyright (c) 2011,2012 Markus Fisch <mf@markusfisch.de>
-#
-# Licensed under the MIT license:
-# http://www.opensource.org/licenses/mit-license.php
-#
 
 # Expand given file into output stream
 #
@@ -22,7 +9,7 @@ include()
 
 	for F
 	do
-		C=`< ${F//@/$LAYOUTS/}`
+		C=$(< ${F//@/$LAYOUTS/})
 
 		# evaluate optional front matter
 		[[ $C == '<<'* ]] && {
@@ -51,7 +38,7 @@ title()
 # for example, to filter output through a markdown interpreter
 content()
 {
-	include $FILE
+	include "$FILE"
 }
 
 # Output, open or close navigation item
@@ -69,14 +56,14 @@ nav_li()
 	local A="NavLink ${1// /}"
 	local L=
 
-	[ $3 ] && {
+	[ "$3" ] && {
 		L=' Active'
 		A="$A${A:+ }Active"
 	}
 
 	echo -n "<li class=\"NavListItem$L\"><a class=\"$A\"";
 
-	if [ $2 ]
+	if [ "$2" ]
 	then
 		echo -n " href=\"$2\">$1</a></li>"
 	else
@@ -102,18 +89,18 @@ nav_ul()
 # @param 1 - path
 nav_list()
 {
-	local S=$1/.nav
+	local S="$1/.nav"
 
-	if [ -f $S ]
+	if [ -f "$S" ]
 	then
 		local F
 
-		while read F
+		while read -r F
 		do
-			echo $1/$F
-		done < $S
+			echo "$1/$F"
+		done < "$S"
 	else
-		echo $1/*
+		echo "$1/"*
 	fi
 }
 
@@ -122,11 +109,11 @@ nav_list()
 # @param 1 - path and name of content file
 nav_index()
 {
-	local LAYOUT= TITLE= QUERY=
+	local LAYOUT='' TITLE='' QUERY=''
 
-	realize $1
+	realize "$1"
 
-	echo $1 $QUERY $TITLE
+	echo "$1" "$QUERY" "$TITLE"
 }
 
 # Create a recursive standard list navigation from given path
@@ -142,35 +129,37 @@ nav()
 	local SKIP=
 	local LINKED=
 
-	[ -d $ROOT ] || return 1
+	[ -d "$ROOT" ] || return 1
 
 	# ensure ROOT is in REF
-	[ $ROOT != ${REF:0:${#ROOT}} ] && REF=$ROOT/
+	[ "$ROOT" != "${REF:0:${#ROOT}}" ] && REF="$ROOT/"
 
 	# generate navigation map for given root directory
-	local MAP=$WORK/nav-${ROOT//[\/ ]/-}
+	local MAP="$WORK/nav-${ROOT//[\/ ]/-}"
 
-	[ -r $MAP ] || process $ROOT nav_index nav_list > $MAP || return 1
+	[ -r "$MAP" ] ||
+		process "$ROOT" nav_index nav_list > "$MAP" ||
+		return 1
 
-	nav_ul "`label ${ROOT##*/}`"
+	nav_ul "$(label "${ROOT##*/}")"
 
 	for (( ;; ))
 	do
-		local F= QUERY= TITLE=
-		local P= STOP=
+		local F='' QUERY='' TITLE=''
+		local P='' STOP=''
 
-		if read F QUERY TITLE
+		if read -r F QUERY TITLE
 		then
 			# skip entries that don't begin with ROOT
-			[ $ROOT == ${F:0:${#ROOT}} ] || continue
+			[ "$ROOT" == "${F:0:${#ROOT}}" ] || continue
 
 			P=${F%/*}
 
 			# skip entries that aren't in active tree
-			[ $SKIP ] && [ "$SKIP" == "${P:0:${#SKIP}}" ] && {
-				! [ $LINKED ] &&
+			[ "$SKIP" ] && [ "$SKIP" == "${P:0:${#SKIP}}" ] && {
+				! [ "$LINKED" ] &&
 					[ "$P" == "${BASE:0:${#P}}" ] && {
-					nav_li "$D" $QUERY
+					nav_li "$D" "$QUERY"
 					LINKED=1
 				}
 
@@ -184,11 +173,11 @@ nav()
 		SKIP=
 		LINKED=
 
-		[ $LAST != $P ] && {
+		[ "$LAST" != "$P" ] && {
 			local DOWN=$LAST
 			local UP=$P
 
-			while [[ ${DOWN%%/*} == ${UP%%/*} ]]
+			while [[ ${DOWN%%/*} == "${UP%%/*}" ]]
 			do
 				if [[ $DOWN == */* ]]
 				then
@@ -224,15 +213,15 @@ nav()
 				BASE="$BASE$D/"
 				[ "$BASE" == "${REF:0:${#BASE}}" ] && A=1
 
-				D=`label $D`
+				D=$(label "$D")
 
 				# skip subdirectories if FLAT is set
-				[ $FLAT ] && {
-					LAST=${B%/*}
-					SKIP=${BASE%/*}
+				[ "$FLAT" ] && {
+					LAST="${B%/*}"
+					SKIP="${BASE%/*}"
 
 					[ "$P" == "$SKIP" ] && {
-						nav_li "$D" $QUERY $A
+						nav_li "$D" "$QUERY" "$A"
 						LINKED=1
 					}
 
@@ -240,15 +229,15 @@ nav()
 				}
 
 				# fold subdirectory if UNSET and A is unset
-				[ $UNFOLD ] || {
-					[ $A ] || {
+				[ "$UNFOLD" ] || {
+					[ "$A" ] || {
 						LAST=${B%/*}
 
 						[ "$B" == "${REF:0:${#B}}" ] && {
 							SKIP=${BASE%/*}
 
 							[ "$P" == "$SKIP" ] && {
-								nav_li "$D" $QUERY
+								nav_li "$D" "$QUERY"
 								LINKED=1
 							}
 						}
@@ -257,25 +246,25 @@ nav()
 					}
 				}
 
-				nav_li "$D" "" $A
+				nav_li "$D" "" "$A"
 				nav_ul "$D"
 			done
 
-			IFS=$SAFE
+			IFS="$SAFE"
 
-			[ $STOP ] && break
-			[ $SKIP ] && continue
+			[ "$STOP" ] && break
+			[ "$SKIP" ] && continue
 
-			LAST=$P
+			LAST="$P"
 		}
 
-		[ $STOP ] && break
+		[ "$STOP" ] && break
 
 		local A=
-		[ $F == $REF ] && A=1
+		[ "$F" == "$REF" ] && A=1
 
-		nav_li "$TITLE" $QUERY $A
-	done < $MAP
+		nav_li "$TITLE" "$QUERY" "$A"
+	done < "$MAP"
 
 	nav_ul
 	echo
@@ -286,13 +275,13 @@ nav()
 # @param 1 - file or directory name
 label()
 {
-	echo ${1//[-_]/ }
+	echo "${1//[-_]/ }"
 }
 
 # Make string lower case
 #
 # @param 1 - some string
-if [ $BASH_VERSINFO ] && (( ${BASH_VERSINFO[0]} > 3 ))
+if [ "$BASH_VERSINFO" ] && (( BASH_VERSINFO[0] > 3 ))
 then
 lower()
 {
@@ -310,20 +299,20 @@ fi
 # @param 1 - path and name of content file
 query()
 {
-	[ ${1%.*} == "$INDEX" ] && {
-		echo 'index.'${1##*.}
+	[ "${1%.*}" == "$INDEX" ] && {
+		echo "index.${1##*.}"
 		return
 	}
 
-	local C=${1#$CONTENTS/} F= N
+	local C=${1#$CONTENTS/} F='' N
 
 	# turn directories into prefixes, replace white space and slashes
 	for N in ${C//\// }
 	do
-		F=$F${F:+-}$N
+		F="$F${F:+-}$N"
 	done
 
-	lower $F
+	lower "$F"
 }
 
 # Find layout for given content file
@@ -343,10 +332,10 @@ layout()
 	do
 		local L
 
-		for L in $LAYOUTS/$N.*
+		for L in "$LAYOUTS/$N."*
 		do
 			[ -r "$L" ] && {
-				echo $L
+				echo "$L"
 				return
 			}
 		done
@@ -358,20 +347,21 @@ layout()
 # @param 1 - path and name of content file
 realize()
 {
-	local CACHE=$WORK/${1//[\/ ]/-}
+	local CACHE="$WORK/${1//[\/ ]/-}"
 
-	[ -r $CACHE ] && {
-		. $CACHE
+	[ -r "$CACHE" ] && {
+		# shellcheck source=/dev/null
+		. "$CACHE"
 		return
 	}
 
-	LAYOUT=`layout $1`
-	TITLE=`label ${1##*/}`
-	QUERY=`query $1.${LAYOUT##*.}`
+	LAYOUT=$(layout "$1")
+	TITLE=$(label "${1##*/}")
+	QUERY=$(query "$1.${LAYOUT##*.}")
 
 	echo "LAYOUT='$LAYOUT'
 TITLE='$TITLE'
-QUERY='$QUERY'" > $CACHE
+QUERY='$QUERY'" > "$CACHE"
 }
 
 # Compose output files
@@ -379,11 +369,11 @@ QUERY='$QUERY'" > $CACHE
 # @param 1 - path and name of content file
 compose()
 {
-	local LAYOUT= TITLE= QUERY=
+	local LAYOUT='' TITLE='' QUERY=''
 
-	realize $1
+	realize "$1"
 
-	FILE=$1 include $LAYOUT > $HTDOCS/$QUERY
+	FILE="$1" include "$LAYOUT" > "$HTDOCS/$QUERY"
 }
 
 # Process files recursively
@@ -395,21 +385,21 @@ process()
 {
 	local F
 
-	for F in `if [ $3 ]
+	for F in $(if [ "$3" ]
 		then
-			$3 $1
+			"$3" "$1"
 		else
-			echo $1/*
-		fi`
+			echo "$1"/*
+		fi)
 	do
 		[ -d "$F" ] && {
-			process $F $2 $3
+			process "$F" "$2" "$3"
 			continue
 		}
 
-		[ -r $F ] || continue
+		[ -r "$F" ] || continue
 
-		$2 $F || return 1
+		"$2" "$F" || return 1
 	done
 
 	return 0
@@ -422,11 +412,12 @@ customize()
 
 	for D in $HOME/.${0##*/} lib
 	do
-		[ -d ] || continue
+		[ -d "$D" ] || continue
 
 		for F in $D/*
 		do
-			[ -r $F ] && . $F
+			# shellcheck source=/dev/null
+			[ -r "$F" ] && . "$F"
 		done
 	done
 }
@@ -446,16 +437,16 @@ after()
 readonly CONTENTS=${CONTENTS:-contents}
 readonly LAYOUTS=${LAYOUTS:-layouts}
 readonly HTDOCS=${HTDOCS:-htdocs}
-readonly WORK=${WORK:-`mktemp -d ${0##*/}.XXXXXXXXXX`}
+readonly WORK=${WORK:-$(mktemp -d "${0##*/}.XXXXXXXXXX")}
 
 customize
 
 # set index from preset or take the first nav item
-INDEX=${INDEX:-`for F in $(nav_list $CONTENTS); do echo $F && break; done`}
-[ -r "$INDEX" ] || INDEX=$CONTENTS/$INDEX
+INDEX=${INDEX:-$(for F in $(nav_list "$CONTENTS"); do echo "$F" && break; done)}
+[ -r "$INDEX" ] || INDEX="$CONTENTS/$INDEX"
 
 before &&
-	process $CONTENTS compose &&
+	process "$CONTENTS" compose &&
 	after
 
-rm -rf $WORK
+rm -rf "$WORK"

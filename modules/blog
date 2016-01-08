@@ -1,17 +1,4 @@
 #!/usr/bin/env bash
-#
-#   O         ,-
-#  ° o    . -´  '     ,-
-#   °  .´        ` . ´,´
-#     ( °   ))     . (
-#      `-;_    . -´ `.`.
-#          `._'       ´
-#
-# Copyright (c) 2011 Markus Fisch <mf@markusfisch.de>
-#
-# Licensed under the MIT license:
-# http://www.opensource.org/licenses/mit-license.php
-#
 
 # Echo link to given file
 #
@@ -27,17 +14,17 @@ posts_prev()
 {
 	local F Q T FLAG
 
-	while read F Q T
+	while read -r F Q T
 	do
-		[ ${F%/*} != $POSTS ] && continue
+		[ "${F%/*}" != "$POSTS" ] && continue
 
-		[ $FLAG ] && {
-			posts_link "&larr; $T" $Q
+		[ "$FLAG" ] && {
+			posts_link "&larr; $T" "$Q"
 			return
 		}
 
-		[ $F == $FILE ] && FLAG=1
-	done < `posts_map`
+		[ "$F" == "$FILE" ] && FLAG=1
+	done < "$(posts_map)"
 
 	echo '&nbsp;'
 }
@@ -45,22 +32,22 @@ posts_prev()
 # Echo link to next post in given directory
 posts_next()
 {
-	local F Q T LAST_QUERY LAST_LABEL
+	local F Q T LAST_QUERY
 
-	while read F Q T
+	while read -r F Q T
 	do
-		[ ${F%/*} != $POSTS ] && continue
+		[ "${F%/*}" != "$POSTS" ] && continue
 
-		[ $F == $FILE ] && {
-			[ $LAST_QUERY ] &&
-				posts_link "$LAST_TITLE &rarr;" $LAST_QUERY
+		[ "$F" == "$FILE" ] && {
+			[ "$LAST_QUERY" ] &&
+				posts_link "$LAST_TITLE &rarr;" "$LAST_QUERY"
 
 			return
 		}
 
 		LAST_QUERY=$Q
 		LAST_TITLE=$T
-	done < `posts_map`
+	done < "$(posts_map)"
 }
 
 # Create posts item
@@ -77,7 +64,7 @@ posts_li()
 # @param 1 - class name
 posts_ul()
 {
-	if [ $1 ]
+	if [ "$1" ]
 	then
 		echo "<ul class=\"${1//[/ ]/}\">"
 	else
@@ -112,11 +99,11 @@ post_date()
 
 	F=${F##*/}
 
-	[[ $F == [0-9]* ]] || return
+	[[ "$F" == [0-9]* ]] || return
 
 	local D=${F:0:10}
 
-	echo "<span>`format_date $D "${FORMAT:-%e %b %Y}"`</span>"
+	echo "<span>$(format_date "$D" "${FORMAT:-%e %b %Y}")</span>"
 }
 
 # Echo list of posts
@@ -124,17 +111,24 @@ post_date()
 # @param 1 - path
 posts_list()
 {
-	ls $1/* | sort -r
+	local F
+
+	for F in "$1/"*
+	do
+		echo "$F"
+	done | sort -r
 }
 
 # Set up posts map
 posts_map()
 {
-	local MAP=$WORK/posts-${POSTS//[\/ ]/-}
+	local MAP="$WORK/posts-${POSTS//[\/ ]/-}"
 
-	[ -r $MAP ] || process $POSTS nav_index posts_list > $MAP || return 1
+	[ -r "$MAP" ] ||
+		process "$POSTS" nav_index posts_list > "$MAP" ||
+		return 1
 
-	echo $MAP
+	echo "$MAP"
 }
 
 # Give a listing of posts in given directory
@@ -142,22 +136,23 @@ posts_map()
 # @param 1 - maximum number of posts (optional)
 posts()
 {
-	local F Q T N=${1:-999999}
+	local F Q T N="${1:-999999}"
 
-	posts_ul ${POSTS##*/}
+	posts_ul "${POSTS##*/}"
 
-	while read F Q T
+	while read -r F Q T
 	do
 		(( N-- == 0 )) && break
 
-		[ ${F%/*} != $POSTS ] && continue
+		[ "${F%/*}" != "$POSTS" ] && continue
 
-		local D=`post_date $F`
+		local D
+		D=$(post_date "$F")
 
 		[ "$D" ] || continue
 
-		posts_li "$D &raquo; $T" $Q
-	done < `posts_map`
+		posts_li "$D &raquo; $T" "$Q"
+	done < "$(posts_map)"
 
 	posts_ul
 }
@@ -176,7 +171,7 @@ clean()
 	# or date numbers or prefix to exclude file from navigation)
 	[[ $F == [-_.]* ]] && F=${F#[-_.]}
 
-	echo $F
+	echo "$F"
 }
 
 # Echo label for given file or directory name
@@ -184,9 +179,10 @@ clean()
 # @param 1 - file or directory name
 label()
 {
-	local F=`clean $1`
+	local F
+	F=$(clean "$1")
 
-	echo ${F//[-_]/ }
+	echo "${F//[-_]/ }"
 }
 
 POSTS=${POSTS:-$CONTENTS/posts}
