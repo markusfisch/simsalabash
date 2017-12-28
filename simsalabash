@@ -3,13 +3,11 @@
 # Expand given file into output stream
 #
 # @param ... - path and name of file to include
-include()
-{
+include() {
 	local F C
-
 	for F
 	do
-		C=$(< ${F//@/$LAYOUTS/})
+		C=$(< "${F//@/$LAYOUTS/}")
 
 		# evaluate optional front matter
 		[[ $C == '<<'* ]] && {
@@ -28,16 +26,14 @@ EOF"
 }
 
 # Print title of current page; call this from a layout file
-title()
-{
+title() {
 	echo "$TITLE"
 }
 
 # Insert content from source file into output stream, call this in a
 # layout file where the content should appear; override to customize,
 # for example, to filter output through a markdown interpreter
-content()
-{
+content() {
 	include "$FILE"
 }
 
@@ -46,8 +42,7 @@ content()
 # @param 1 - label (optional, closes list item if empty)
 # @param 2 - href (optional, opens list item if empty)
 # @param 3 - true when active (optional)
-nav_li()
-{
+nav_li() {
 	[ "$1" ] || {
 		echo -n '</li>'
 		return
@@ -74,8 +69,7 @@ nav_li()
 # Open or close navigation listing
 #
 # @param 1 - class name (optional, if empty, list gets closed)
-nav_ul()
-{
+nav_ul() {
 	[ "$1" ] || {
 		echo -n '</ul>'
 		return
@@ -87,8 +81,7 @@ nav_ul()
 # Echo list of content files that should be in navigation
 #
 # @param 1 - path
-nav_list()
-{
+nav_list() {
 	local S="$1/.nav"
 
 	if [ -f "$S" ]
@@ -107,8 +100,7 @@ nav_list()
 # Index given content file for navigation
 #
 # @param 1 - path and name of content file
-nav_index()
-{
+nav_index() {
 	local LAYOUT='' TITLE='' QUERY=''
 
 	realize "$1"
@@ -121,8 +113,7 @@ nav_index()
 # @param 1 - root path (optional)
 # @flags UNFOLD - unfold navigation tree
 # @flags FLAT - don't dive into directories
-nav()
-{
+nav() {
 	local ROOT=${1:-$CONTENTS}
 	local REF=$FILE
 	local LAST=$ROOT
@@ -273,23 +264,20 @@ nav()
 # Echo label for given file or directory name
 #
 # @param 1 - file or directory name
-label()
-{
+label() {
 	echo "${1//[-_]/ }"
 }
 
 # Make string lower case
 #
 # @param 1 - some string
-if [ "$BASH_VERSINFO" ] && (( BASH_VERSINFO[0] > 3 ))
+if [ "${BASH_VERSINFO[0]}" ] && (( BASH_VERSINFO[0] > 3 ))
 then
-lower()
-{
+lower() {
 	echo "${1,,}"
 }
 else
-lower()
-{
+lower() {
 	echo "$1" | tr '[:upper:]' '[:lower:]'
 }
 fi
@@ -297,8 +285,7 @@ fi
 # Compose query name
 #
 # @param 1 - path and name of content file
-query()
-{
+query() {
 	[ "${1%.*}" == "$INDEX" ] && {
 		echo "index.${1##*.}"
 		return
@@ -318,8 +305,7 @@ query()
 # Find layout for given content file
 #
 # @param 1 - path and name of content file
-layout()
-{
+layout() {
 	# try path components in reverse order
 	local R N
 
@@ -345,8 +331,7 @@ layout()
 # Realize properties of given file
 #
 # @param 1 - path and name of content file
-realize()
-{
+realize() {
 	local CACHE="$WORK/${1//[\/ ]/-}"
 
 	[ -r "$CACHE" ] && {
@@ -367,8 +352,7 @@ QUERY='$QUERY'" > "$CACHE"
 # Compose output files
 #
 # @param 1 - path and name of content file
-compose()
-{
+compose() {
 	local LAYOUT='' TITLE='' QUERY=''
 
 	realize "$1"
@@ -381,8 +365,7 @@ compose()
 # @param 1 - path to process
 # @param 2 - function to call for every file
 # @param 3 - function to get file listing from (optional)
-process()
-{
+process() {
 	local F
 
 	for F in $(if [ "$3" ]
@@ -406,8 +389,7 @@ process()
 }
 
 # Load extensions
-customize()
-{
+customize() {
 	local D F
 
 	for D in $HOME/.${0##*/} lib
@@ -423,14 +405,12 @@ customize()
 }
 
 # Actions to perform before processing
-before()
-{
+before() {
 	return 0
 }
 
 # Actions to perform after processing
-after()
-{
+after() {
 	return 0
 }
 

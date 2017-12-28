@@ -1,20 +1,17 @@
-.Content
-{
+.Content {
 	background: #f8f8f8;
 	margin: 1em auto; padding: 0 1em;
 	max-width: 40em;
 	font: 12pt monospace; color: #484848;
 }
 
-.Nav ul
-{
+.Nav ul {
 	margin: 0; padding: 0;
 	list-style: none;
 	overflow: hidden;
 }
 
-.Nav a
-{
+.Nav a {
 	display: block;
 	margin: 0; padding: .25em 1em;
 	background: #eee;
@@ -26,74 +23,62 @@
 	overflow: hidden;
 }
 
-.Nav a.Active
-{
+.Nav a.Active {
 	background: #a8cd43;
 	color: #111;
 	border-color: #98bd33;
 }
 
-.Nav li
-{
+.Nav li {
 	margin: 0 .2em .2em 0; padding: 0;
 	float: left;
 	position: relative;
 }
 
-.Nav ul ul
-{
+.Nav ul ul {
 	position: relative;
 	left: 0; top: 100%;
 	padding-top: .2em;
 }
 
-.Nav ul ul li
-{
+.Nav ul ul li {
 	clear: left;
 }
 
-.Nav ul ul a
-{
+.Nav ul ul a {
 	width: 10em;
 	white-space: nowrap;
 	overflow: hidden;
 }
 
-.Nav li ul ul
-{
+.Nav li ul ul {
 	position: absolute;
 	left: 100%; top: -.2em; z-index: 100;
 	padding-left: .2em;
 }
 
-.Article
-{
+.Article {
 	clear: both;
 }
 
-h1
-{
+h1 {
 	color: #a8cd43;
 	font-size: 2em;
 }
 
-h2
-{
+h2 {
 	color: #888;
 }
 
-a
-{
+a {
 	color: #111;
 }
 
-p, li
-{
+p, li {
 	line-height: 180%;
 }
 
-.Footer
-{
+.Footer {
 	clear: both;
 	font-size: 80%; color: #888;
 	text-transform: uppercase;
