@@ -16,6 +16,10 @@ include() {
 			C=${C##*>>}
 		}
 
+		# escape back-ticks, since they have meaning in Markdown
+		# and we'd better use $() in bash anyway
+		C=${C//\`/\\\`}
+
 		# would love to use a built-in here but
 		# eval "echo \"${@//\"/\\\"}\""
 		# doesn't work very well for all kinds of quotes
