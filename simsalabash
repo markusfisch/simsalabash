@@ -396,7 +396,7 @@ customize() {
 	do
 		[ -d "$D" ] || continue
 
-		for F in $D/*
+		for F in "$D/"*
 		do
 			# shellcheck source=/dev/null
 			[ -r "$F" ] && . "$F"
